@@ -12,7 +12,7 @@ import {
 
 import "../styles/Chat.css";
 
-export const Chat = ({ room }) => {
+export const Chat = ({ roomID }) => { // Accept roomID as a prop
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesRef = collection(db, "messages");
@@ -20,10 +20,10 @@ export const Chat = ({ room }) => {
   useEffect(() => {
     const queryMessages = query(
       messagesRef,
-      where("room", "==", room),
+      where("room", "==", roomID), // Listen to messages in the specified roomID
       orderBy("createdAt")
     );
-    const unsuscribe = onSnapshot(queryMessages, (snapshot) => {
+    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
       let messages = [];
       snapshot.forEach((doc) => {
         messages.push({ ...doc.data(), id: doc.id });
@@ -32,8 +32,8 @@ export const Chat = ({ room }) => {
       setMessages(messages);
     });
 
-    return () => unsuscribe();
-  }, []);
+    return () => unsubscribe();
+  }, [roomID]); // Re-run the listener when roomID changes
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -43,7 +43,7 @@ export const Chat = ({ room }) => {
       text: newMessage,
       createdAt: serverTimestamp(),
       user: auth.currentUser.displayName,
-      room,
+      room: roomID, // Use the current roomID
     });
 
     setNewMessage("");
@@ -52,7 +52,7 @@ export const Chat = ({ room }) => {
   return (
     <div className="chat-app">
       <div className="header">
-        <h1>Welcome to: {room.toUpperCase()}</h1>
+        <h1>Welcome to: {roomID.toUpperCase()}</h1> {/* Display the roomID */}
       </div>
       <div className="messages">
         {messages.map((message) => (
