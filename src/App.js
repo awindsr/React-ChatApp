@@ -10,7 +10,7 @@ const cookies = new Cookies();
 function ChatApp() {
   const [isAuth, setIsAuth] = useState(cookies.get("auth-token"));
   const [isInChat, setIsInChat] = useState(null);
-  const [room, setRoom] = useState("");
+  const [roomID, setRoom] = useState("");
 
   if (!isAuth) {
     return (
@@ -39,7 +39,7 @@ function ChatApp() {
           </button>
         </div>
       ) : (
-        <Chat room={room} />
+        <Chat room={roomID} />
       )}
     </AppWrapper>
   );
